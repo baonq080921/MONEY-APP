@@ -71,13 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
               Screen1(),
               Screen2(),
               Screen3(),
+
             ],
           ),
-
           // Indicator trang (SmoothPageIndicator)
           Positioned(
-            bottom: 250,
+            bottom: 200,
             child: SmoothPageIndicator(
+
               controller: pageController,
               count: 3,
               effect: WormEffect(
@@ -91,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           // Nút chuyển trang
           Positioned(
-            bottom: 150,
+            bottom: 100,
             child: SizedBox(
               width: 300, // Chiều rộng của nút
               child: ElevatedButton(

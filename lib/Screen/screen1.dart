@@ -8,7 +8,7 @@ class Screen1 extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset('assets/images/image1.png'),
-        SizedBox(height: 20),
+        SizedBox(height: 10),
         Text("Quản lý thu chi",style: TextStyle(
           color: Colors.teal,
           fontSize:25,
@@ -17,11 +17,14 @@ class Screen1 extends StatelessWidget {
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10) ,
-           child: Text("Quản lý thu nhập và chi \ntiêu trong gia đình",style: TextStyle(
+           child: Text("Quản lý thu nhập \nvà chi tiêu trong gia đình",style: TextStyle(
                 color: Colors.teal.withOpacity(0.4),
                 fontSize: 15,
                 fontWeight: FontWeight.w600
-            ),),
+            ),
+             textAlign: TextAlign.center,
+             softWrap: true,
+           ),
         )
       ],
     );

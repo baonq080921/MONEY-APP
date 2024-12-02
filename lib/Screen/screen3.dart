@@ -14,14 +14,17 @@ class Screen3 extends StatelessWidget {
             fontSize:25,
             fontWeight: FontWeight.w500
         ),),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10,),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10) ,
-          child: Text("Kiểm soát tài chính dễ dàng và \ntrực quan hơn với đồ thị",style: TextStyle(
+          child: Text("Kiểm soát tài chính dễ dàng và trực quan\n hơn với đồ thị",style: TextStyle(
               color: Colors.teal.withOpacity(0.4),
               fontSize: 15,
               fontWeight: FontWeight.w600
-          ),),
+          ),
+            textAlign: TextAlign.center,
+            softWrap: true,
+          ),
         )
       ],
     );
