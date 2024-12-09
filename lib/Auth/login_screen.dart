@@ -16,13 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(  // Thêm SingleChildScrollView để cuộn nội dung
+      body: SingleChildScrollView(
+        // Thêm SingleChildScrollView để cuộn nội dung
         child: Container(
           width: double.infinity,
           decoration: const BoxDecoration(
             color: Colors.teal, // Màu nền chính
           ),
-
           child: Column(
             children: <Widget>[
               const SizedBox(height: 150),
@@ -55,7 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                   fontSize: 25,
                                   color: isLogin ? Colors.teal : Colors.grey,
-                                  fontWeight: isLogin ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: isLogin
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),
@@ -73,7 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                   fontSize: 25,
                                   color: !isLogin ? Colors.teal : Colors.grey,
-                                  fontWeight: !isLogin ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: !isLogin
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),
@@ -95,14 +99,14 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MyApp()),  // Quay lại trang Intro
+            MaterialPageRoute(
+                builder: (context) => const MyApp()), // Quay lại trang Intro
           );
         },
         backgroundColor: Colors.teal,
-        child: Icon(Icons.arrow_back),  // Mũi tên quay lại
+        child: const Icon(Icons.arrow_back), // Mũi tên quay lại
       ),
     );
-
   }
 
   // Form đăng nhập
@@ -110,25 +114,29 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 50,),
+        const SizedBox(
+          height: 50,
+        ),
         const Text(
           "Đăng nhập vào tài khoản",
           style: TextStyle(
-              fontSize: 22,
-              color: Colors.teal,
-              fontWeight: FontWeight.w600
-          ),),
-        SizedBox(height: 40,),
+              fontSize: 22, color: Colors.teal, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(
+          height: 40,
+        ),
         const Text(
           "Tài khoản",
-          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         buildInputField("Nhập tài khoản của bạn", false),
         const SizedBox(height: 20),
         const Text(
           "Mật khẩu",
-          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         buildInputField("Nhập mật khẩu của bạn", true),
@@ -137,7 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             StatefulBuilder(
               builder: (context, setState) {
-                bool isRememberChecked = false; // Biến lưu trạng thái của checkbox
+                bool isRememberChecked =
+                    false; // Biến lưu trạng thái của checkbox
                 return Row(
                   children: [
                     RoundedCheckbox(
@@ -148,29 +157,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
-                    SizedBox(width: 10,),
-                    Text("Lưu thông tin đăng nhập",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.teal,
-                      fontWeight: FontWeight.w600
-                    ),),
-                    SizedBox(width: 80,),
-                    Text("Quên mật khẩu?",style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.teal,
-                      decorationThickness: 1.5,
-                      color: Colors.teal,
-                      fontWeight: FontWeight.w800
-                    ),)
-                    
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      "Lưu thông tin đăng nhập",
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(
+                      width: 80,
+                    ),
+                    const Text(
+                      "Quên mật khẩu?",
+                      style: TextStyle(
+                          fontSize: 9,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.teal,
+                          decorationThickness: 1.5,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.w800),
+                    )
                   ],
                 );
               },
             ),
           ],
         ),
-
         const SizedBox(height: 80),
         buildSubmitButton("Đăng Nhập"),
       ],
@@ -182,7 +197,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 40,),
+        const SizedBox(
+          height: 40,
+        ),
         const Text(
           "Đăng ký tài khoản",
           style: TextStyle(
@@ -194,31 +211,37 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 20),
         const Text(
           "Tài khoản",
-          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         buildInputField("Nhập tài khoản của bạn", false),
         const SizedBox(height: 20),
         const Text(
           "Mật khẩu",
-          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         buildInputField("Nhập mật khẩu của bạn", true),
         const SizedBox(height: 20),
         const Text(
           "Nhập lại mật khẩu",
-          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         buildInputField("Nhập lại mật khẩu của bạn", true),
-        const SizedBox(height: 20,),
+        const SizedBox(
+          height: 20,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             StatefulBuilder(
               builder: (context, setState) {
-                bool isRememberChecked = false; // Biến lưu trạng thái của checkbox
+                bool isRememberChecked =
+                    false; // Biến lưu trạng thái của checkbox
                 return Row(
                   children: [
                     RoundedCheckbox(
@@ -229,9 +252,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         children: [
                           TextSpan(
                             text: "Bằng cách tick vào đây, bạn đồng ý với ",
@@ -259,7 +284,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
         ),
-
         const SizedBox(height: 80),
         buildSubmitButton("Đăng Ký"),
       ],
@@ -294,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
           print("$text thành công");
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Homepage()),
+            MaterialPageRoute(builder: (context) => const Homepage()),
           );
         },
         style: ElevatedButton.styleFrom(

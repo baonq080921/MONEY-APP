@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // PageView để chuyển trang
           PageView(
             controller: pageController,
-            children: [
+            children: const [
               Screen1(),
               Screen2(),
               Screen3(),

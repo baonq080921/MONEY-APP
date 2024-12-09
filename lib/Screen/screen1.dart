@@ -8,8 +8,8 @@ class Screen1 extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset('assets/images/image1.png'),
-        SizedBox(height: 10),
-        Text("Quản lý thu chi",style: TextStyle(
+        const SizedBox(height: 10),
+        const Text("Quản lý thu chi",style: TextStyle(
           color: Colors.teal,
           fontSize:25,
           fontWeight: FontWeight.w500

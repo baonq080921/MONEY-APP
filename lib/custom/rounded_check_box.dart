@@ -4,10 +4,10 @@ class RoundedCheckbox extends StatefulWidget {
   final ValueChanged<bool?> onChanged;
 
   const RoundedCheckbox({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   _RoundedCheckboxState createState() => _RoundedCheckboxState();
