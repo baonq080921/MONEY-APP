@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:money/pages/AddAccountForm.dart'; // Nhớ import trang AddAccountForm
+import 'package:money/layouts/body_add_account.dart';
+import 'package:money/modal/items.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money/HomePage/home_page_child.dart';
 
 class AddAccount extends StatefulWidget {
   const AddAccount({super.key});
@@ -9,18 +13,79 @@ class AddAccount extends StatefulWidget {
 }
 
 class _AddAccountState extends State<AddAccount> {
-  String _bankName = "Ngân hàng ABC";
-  String _userName = "Nguyễn Văn A";
-  String _balance = "1.000.000.000";
+  final List<DataItem2> items = [];
+  int total = 0;
 
-  // Hàm callback để cập nhật dữ liệu từ trang AddAccountForm
-  void _updateAccountInfo(String bankName, String userName, String balance) {
+  @override
+  void initState() {
+    super.initState();
+    _loadData(); // Tải dữ liệu khi mở trang
+  }
+
+  // Lưu dữ liệu vào SharedPreferences
+  void _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Lưu danh sách tài khoản
+    List<String> accounts = items
+        .map((item) => '${item.bank_name},${item.user_name},${item.asset}')
+        .toList();
+    prefs.setStringList('accounts', accounts);
+
+    // Lưu tổng số dư
+    prefs.setInt('total', total);
+  }
+
+  // Tải dữ liệu từ SharedPreferences
+  void _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Tải danh sách tài khoản
+    List<String>? accounts = prefs.getStringList('accounts');
+    if (accounts != null) {
+      setState(() {
+        items.clear();
+        for (var account in accounts) {
+          var parts = account.split(',');
+          items.add(DataItem2(
+            bank_name: parts[0],
+            user_name: parts[1],
+            asset: int.parse(parts[2]),
+          ));
+        }
+      });
+    }
+
+    // Tải tổng số dư
+    int savedTotal =
+        prefs.getInt('total') ?? 0; // Nếu không có giá trị, mặc định là 0
     setState(() {
-      _bankName = bankName;
-      _userName = userName;
-      _balance = balance;
+      total = savedTotal;
     });
   }
+
+  // Hàm callback để cập nhật dữ liệu từ trang AddAccountForm
+  void _updateAccountInfo(String bankName, String userName, int balance) {
+    final newItem =
+        DataItem2(user_name: userName, bank_name: bankName, asset: balance);
+    setState(() {
+      items.add(newItem);
+      total += balance;
+    });
+
+    _saveData(); // Lưu dữ liệu sau khi thêm mới
+  }
+
+  void _clearData() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('accounts'); // Xóa danh sách tài khoản
+  await prefs.remove('total');    // Xóa tổng số dư
+  setState(() {
+    items.clear();
+    total = 0;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +108,16 @@ class _AddAccountState extends State<AddAccount> {
                         color: Colors.white,
                         iconSize: 24,
                         icon: const Icon(
-                          Icons.arrow_back_ios,
-                          size: 40,
+                          Icons.arrow_back,
+                          size: 30,
                         ),
                         onPressed: () {
-                          Navigator.pop(context); // Quay lại trang trước
+                          Navigator.pop(
+                            context,total
+                          );
                         },
                       ),
+
                       const Text(
                         "Tài Khoản",
                         style: TextStyle(
@@ -63,7 +131,7 @@ class _AddAccountState extends State<AddAccount> {
                         iconSize: 24,
                         icon: const Icon(
                           Icons.add,
-                          size: 40,
+                          size: 30,
                         ),
                         onPressed: () {
                           // Điều hướng sang trang nhập liệu
@@ -79,7 +147,6 @@ class _AddAccountState extends State<AddAccount> {
                       ),
                     ],
                   ),
-
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -87,11 +154,11 @@ class _AddAccountState extends State<AddAccount> {
                         Container(
                           width: 349,
                           height: 61,
-                          decoration:  BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                           ),
-                          child:  Column(
+                          child: Column(
                             children: [
                               Text(
                                 "Tổng số dư",
@@ -104,7 +171,7 @@ class _AddAccountState extends State<AddAccount> {
                                 height: 10,
                               ),
                               Text(
-                                "$_balance VND",
+                                "$total",
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.teal,
@@ -121,97 +188,27 @@ class _AddAccountState extends State<AddAccount> {
             ),
           ),
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoCard(
-                    title: "Ngân hàng",
-                    content: _bankName,
-                    user_info: _userName,
-                    balance: _balance,
-                    icon: Icons.account_balance,
-                  ),
-                ],
+        // Trong trang AddAccount
+        body: ListView.builder(
+          shrinkWrap: true, // Cho phép ListView tự điều chỉnh kích thước
+          physics:
+              const NeverScrollableScrollPhysics(), // Vô hiệu hóa cuộn bên trong
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: MyBody(
+                item: items[index],
+                onDelete: () {
+                  setState(() {
+                    items.removeAt(index); // Xóa tài khoản khỏi danh sách
+                  });
+                  _saveData(); // Lưu lại sau khi xóa
+                },
               ),
-            ),
-          ),
+            );
+          },
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(
-      {required String title,
-      required String content,
-      required String user_info,
-      required String balance,
-      required IconData icon}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            size: 40,
-            color: Colors.teal,
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                content,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Thông tin người dùng: $user_info",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.amber,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Số dư tài khoản: $balance VND",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

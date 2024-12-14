@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AddAccountForm extends StatefulWidget {
-  final Function(String, String, String) onAdd; // Hàm callback để truyền dữ liệu về trang trước
+  final Function(String, String, int) onAdd; // Hàm callback để truyền dữ liệu về trang trước
 
   const AddAccountForm({super.key, required this.onAdd});
 
@@ -41,16 +41,18 @@ class _AddAccountFormState extends State<AddAccountForm> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                // Chuyển giá trị từ _balanceController.text sang int
+                int balance = int.tryParse(_balanceController.text) ?? 0; // Nếu không phải số, gán giá trị mặc định là 0
                 // Truyền dữ liệu về trang trước khi nhấn nút
                 widget.onAdd(
                   _bankController.text,
                   _userController.text,
-                  _balanceController.text,
+                  balance, // Truyền balance dưới dạng int
                 );
                 Navigator.pop(context); // Quay lại trang trước
               },
-              child: const Text("Cập nhật"),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+              child: const Text("Thêm mới"),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money/custom/rounded_check_box.dart';
-import 'package:money/HomePage/home_page.dart';
+import 'package:money/HomePage/home_page_child.dart';
+import 'package:money/HomePage/home_page_parent.dart';
 import 'package:money/main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +13,20 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLogin = true; // Biến để kiểm tra trạng thái đăng nhập hay đăng ký
+  String selectedRole = 'child'; // Biến lưu vai trò được chọn
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController(); // Chỉ dùng khi đăng ký
+
+@override
+  void dispose() {
+    // Hủy các controller khi không dùng nữa
+    usernameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -108,30 +123,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
   // Form đăng nhập
+// Form đăng nhập
   Widget buildLoginForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 50,
-        ),
+        const SizedBox(height: 50),
         const Text(
           "Đăng nhập vào tài khoản",
           style: TextStyle(
               fontSize: 22, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(
-          height: 40,
-        ),
+        const SizedBox(height: 40),
         const Text(
           "Tài khoản",
           style: TextStyle(
               fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        buildInputField("Nhập tài khoản của bạn", false),
+        buildInputFields("Nhập tài khoản của bạn", false, usernameController),
         const SizedBox(height: 20),
         const Text(
           "Mật khẩu",
@@ -139,50 +150,39 @@ class _LoginScreenState extends State<LoginScreen> {
               fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        buildInputField("Nhập mật khẩu của bạn", true),
+        buildInputFields("Nhập mật khẩu của bạn", true,passwordController),
+        const SizedBox(height: 20),
+        const Text(
+          "Chọn vai trò",
+          style: TextStyle(
+              fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            StatefulBuilder(
-              builder: (context, setState) {
-                bool isRememberChecked =
-                    false; // Biến lưu trạng thái của checkbox
-                return Row(
-                  children: [
-                    RoundedCheckbox(
-                      value: isRememberChecked,
-                      onChanged: (value) {
-                        setState(() {
-                          isRememberChecked = value ?? false;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      "Lưu thông tin đăng nhập",
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(
-                      width: 80,
-                    ),
-                    const Text(
-                      "Quên mật khẩu?",
-                      style: TextStyle(
-                          fontSize: 9,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.teal,
-                          decorationThickness: 1.5,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.w800),
-                    )
-                  ],
-                );
-              },
+            Expanded(
+              child: RadioListTile(
+                title: const Text("Users"),
+                value: 'child',
+                groupValue: selectedRole,
+                onChanged: (value) {
+                  setState(() {
+                    selectedRole = value.toString();
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: RadioListTile(
+                title: const Text("Family"),
+                value: 'parent',
+                groupValue: selectedRole,
+                onChanged: (value) {
+                  setState(() {
+                    selectedRole = value.toString();
+                  });
+                },
+              ),
             ),
           ],
         ),
@@ -191,7 +191,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
-
   // Form đăng ký
   Widget buildRegisterForm() {
     return Column(
@@ -215,7 +214,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        buildInputField("Nhập tài khoản của bạn", false),
         const SizedBox(height: 20),
         const Text(
           "Mật khẩu",
@@ -223,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        buildInputField("Nhập mật khẩu của bạn", true),
         const SizedBox(height: 20),
         const Text(
           "Nhập lại mật khẩu",
@@ -231,7 +228,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
-        buildInputField("Nhập lại mật khẩu của bạn", true),
         const SizedBox(
           height: 20,
         ),
@@ -291,7 +287,27 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Widget cho trường nhập liệu
-  Widget buildInputField(String hint, bool obscureText) {
+  Widget buildInputFields(String hint, bool obscureText, TextEditingController controller) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+    decoration: BoxDecoration(
+      color: Colors.blueGrey.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(30),
+    ),
+    child: TextField(
+      controller: controller, // Sử dụng controller cho TextField
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        hintText: hint,
+        border: InputBorder.none,
+        hintStyle: const TextStyle(color: Colors.grey),
+      ),
+    ),
+  );
+}
+
+// Widget cho trường nhập liệu
+  Widget buildInputField(String hint, bool obscureText, TextEditingController controller) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
       decoration: BoxDecoration(
@@ -299,6 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextField(
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hint,
@@ -309,17 +326,32 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   // Nút gửi form
   Widget buildSubmitButton(String text) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          print("$text thành công");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Homepage()),
-          );
+          if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")),
+            );
+            return;
+          }
+
+          // Chuyển hướng theo vai trò
+          if (selectedRole == 'child') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>  Homepage()),
+            );
+          } else if (selectedRole == 'parent') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ParentPage()),
+            );
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,

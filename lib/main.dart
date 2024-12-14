@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:money/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:money/Auth/login_screen.dart';
 import 'package:money/Screen/screen1.dart';
@@ -5,7 +7,9 @@ import 'package:money/Screen/screen2.dart';
 import 'package:money/Screen/screen3.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -39,7 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Hàm để chuyển đến trang kế tiếp
   void goToNextPage() {
-    int nextPage = pageController.page!.toInt() + 1; // Lấy chỉ số trang hiện tại và cộng thêm 1
+    int nextPage = pageController.page!.toInt() +
+        1; // Lấy chỉ số trang hiện tại và cộng thêm 1
 
     if (nextPage >= 3) {
       // Nếu đã đến trang cuối cùng, chuyển đến màn hình đăng nhập
@@ -71,14 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
               Screen1(),
               Screen2(),
               Screen3(),
-
             ],
           ),
           // Indicator trang (SmoothPageIndicator)
           Positioned(
             bottom: 200,
             child: SmoothPageIndicator(
-
               controller: pageController,
               count: 3,
               effect: WormEffect(
@@ -96,10 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
             child: SizedBox(
               width: 300, // Chiều rộng của nút
               child: ElevatedButton(
-                onPressed: goToNextPage, // Mỗi lần nhấn, chuyển sang trang kế tiếp
+                onPressed:
+                    goToNextPage, // Mỗi lần nhấn, chuyển sang trang kế tiếp
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal, // Màu nền của nút
-                  padding: const EdgeInsets.symmetric(vertical: 15), // Độ dày của nút
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15), // Độ dày của nút
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30), // Bo tròn góc
                   ),

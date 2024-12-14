@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:money/pages/add_balance.dart';
 import 'package:money/pages/add_account.dart';
 import 'package:money/pages/more.dart';
+import 'package:money/Auth/login_screen.dart';
+import 'package:money/layouts/body.dart';
+import 'package:intl/intl.dart';
+import 'package:money/modal/item.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -12,43 +16,69 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  // Chỉ mục của tab hiện tại
   int _selectedIndex = 0;
-  
+  int balance = 1000000;
+  List<DataItem> items = [];
 
-  final List<Widget>_page = [
-    const Homepage(),
+  final List<Widget> _page = [
     const AddAccount(),
     const AddBalance(),
-    const MorePage(),  
+    const MorePage(),
   ];
 
-
-  // Hàm để xử lý khi người dùng chọn tab
   void _onItemTapped(int index) {
-  if (index == 0) {
-    // Không làm gì vì đây là trang hiện tại
-    return;
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index > 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => _page[index - 1],
+        ),
+      ).then((result) {
+        if (result != null && result is Map<String, String>) {
+          // Chuyển dữ liệu từ Map sang DataItem và thêm vào danh sách
+          setState(() {
+            DataItem newItem = DataItem(
+              price: result['expense'] ?? '',
+              item: result['description'] ?? '',
+              bank: result['bank'] ?? '',
+              user_name: result['user'] ?? '',
+            );
+            items.add(newItem); // Thêm vào danh sách items
+          });
+        }
+      });
+    }
   }
 
-  // Điều hướng đến trang tương ứng
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => _page[index]),
-  ).then((_) {
-    // Quay lại trang chính (Homepage) sau khi người dùng trở về
-    setState(() {
-      _selectedIndex = 0;
-    });
-  });
-}
+  void _navigateToAddBalance(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddBalance()),
+    );
 
-
+    // Kiểm tra nếu có dữ liệu trả về
+    if (result != null && result is Map<String, String>) {
+      // Chuyển dữ liệu từ Map sang DataItem và thêm vào danh sách
+      setState(() {
+        DataItem newItem = DataItem(
+          price: result['expense'] ?? '',
+          item: result['description'] ?? '',
+          bank: result['bank'] ?? '',
+          user_name: result['user'] ?? '',
+        );
+        items.add(newItem); // Thêm vào danh sách items
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    String formattedBalance = NumberFormat('#,##0').format(balance);
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Color(0xFFF2FCFC),
+        backgroundColor: const Color(0xFFF2FCFC),
         appBar: AppBar(
           toolbarHeight: 150,
           backgroundColor: Colors.teal,
@@ -64,9 +94,18 @@ class _HomepageState extends State<Homepage> {
                       IconButton(
                         color: Colors.white,
                         iconSize: 24,
-                        icon: const Icon(Icons.menu),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                        ),
                         onPressed: () {
-                          // Xử lý sự kiện khi nhấn vào icon bên trái
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const LoginScreen(),
+                            ),
+                          );
                         },
                       ),
                       const Text(
@@ -80,10 +119,11 @@ class _HomepageState extends State<Homepage> {
                       IconButton(
                         color: Colors.white,
                         iconSize: 24,
-                        icon: const Icon(Icons.notifications),
-                        onPressed: () {
-                          // Xử lý sự kiện khi nhấn vào icon bên phải
-                        },
+                        icon: const Icon(
+                          Icons.notifications,
+                          size: 30,
+                        ),
+                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -98,7 +138,7 @@ class _HomepageState extends State<Homepage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
                               Text(
                                 "Tổng số dư",
@@ -107,24 +147,16 @@ class _HomepageState extends State<Homepage> {
                                   color: Colors.teal,
                                 ),
                               ),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              const SizedBox(height: 10),
                               Text(
-                                "1.000.000.000 VND",
-                                style: TextStyle(
+                                "$formattedBalance VND",
+                                style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.teal,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          iconSize: 44,
-                          color: Colors.white,
-                          icon: const Icon(Icons.camera_alt_rounded),
                         ),
                       ],
                     ),
@@ -134,22 +166,22 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
         ),
-        body: Center(
-          child: Text('Content of the page$_selectedIndex'),
+        body:  SingleChildScrollView(
+          child: Body(items:items),
         ),
         bottomNavigationBar: CurvedNavigationBar(
-          index: _selectedIndex,  // Chỉ mục tab hiện tại
-          height: 60.0,  // Chiều cao của bottom navigation
+          index: _selectedIndex,
+          height: 60.0,
           items: const <Widget>[
             Icon(Icons.home, size: 30),
             Icon(Icons.person, size: 30),
-            Icon(Icons.add,size: 30),
+            Icon(Icons.add, size: 30),
             Icon(Icons.more_horiz, size: 30),
           ],
-          color: Colors.white,  // Màu nền của BottomNavigationBar
-          buttonBackgroundColor: Colors.teal,  // Màu của nút bấm
-          backgroundColor: Colors.transparent,  // Màu nền của thanh điều hướng
-          onTap: _onItemTapped,  // Hàm xử lý khi nhấn tab
+          color: Colors.white,
+          buttonBackgroundColor: Colors.teal,
+          backgroundColor: Colors.transparent,
+          onTap: _onItemTapped,
         ),
       ),
     );
